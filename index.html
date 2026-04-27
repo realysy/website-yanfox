@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>what you are looking for...</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #1a1e2b 0%, #2a3142 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
+      padding: 2rem 1.5rem;
+      margin: 0;
+      position: relative;
+    }
+
+    /* 诗意背景纹理：柔光浮动 */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 40%, rgba(255, 235, 200, 0.08) 0%, transparent 45%),
+                  radial-gradient(circle at 70% 70%, rgba(200, 220, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* 主内容容器：垂直弹性布局，确保上方诗、中间视觉、下方诗 */
+    .container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.8rem;
+    }
+
+    /* 诗歌通用样式：优雅、半透、有呼吸感 */
+    .poem {
+      color: #e6dfcf;
+      text-align: center;
+      font-weight: 350;
+      letter-spacing: 0.4px;
+      line-height: 1.8;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .top-poem {
+      font-size: 1.2rem;
+      max-width: 500px;
+      margin-bottom: 0.2rem;
+      border-left: 2px solid rgba(220, 200, 150, 0.5);
+      border-right: 2px solid rgba(220, 200, 150, 0.5);
+      padding: 0.5rem 1.8rem;
+      background: rgba(20, 22, 30, 0.3);
+      backdrop-filter: blur(3px);
+      border-radius: 40px;
+    }
+
+    .bottom-poem {
+      font-size: 1.25rem;
+      max-width: 520px;
+      margin-top: 0.2rem;
+      font-style: italic;
+      background: rgba(25, 28, 38, 0.35);
+      backdrop-filter: blur(4px);
+      padding: 0.7rem 2rem;
+      border-radius: 48px;
+      border-bottom: 1px solid rgba(230, 210, 170, 0.45);
+    }
+
+    .poem p {
+      margin: 0.3rem 0;
+      white-space: pre-line;
+    }
+
+    /* 中间核心区域：调皮眼眸 + 文字 */
+    .eye-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      /* 大约占据视觉中心，使用相对单位 */
+      margin: 0.5rem 0 0.8rem 0;
+    }
+
+    .phrase {
+      font-size: clamp(1.8rem, 6vw, 2.8rem);
+      font-weight: 400;
+      color: #f7efe2;
+      text-align: center;
+      margin-bottom: 1.8rem;
+      font-family: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
+      letter-spacing: 1px;
+      text-shadow: 0 0 18px rgba(240, 210, 140, 0.5), 0 4px 10px rgba(0,0,0,0.6);
+      background: rgba(10, 12, 20, 0.3);
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 2.2rem;
+      border-radius: 60px;
+      display: inline-block;
+      border: 1px solid rgba(255, 245, 200, 0.25);
+      transform: rotate(-0.5deg);
+      transition: transform 0.2s ease;
+    }
+
+    .phrase:hover {
+      transform: rotate(0.2deg) scale(1.02);
+    }
+
+    /* 眼睛容器 */
+    .eyes {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    /* 单只眼睛外框 */
+    .eye {
+      width: 70px;
+      height: 70px;
+      background: #fdfaf3;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5), inset 0 -8px 12px rgba(0,0,0,0.2), inset 0 8px 10px rgba(255,255,240,0.8);
+      background: radial-gradient(circle at 50% 35%, #ffffff, #f0e5d2);
+      border: 3px solid #b7a17c;
+      position: relative;
+      transition: box-shadow 0.2s;
+    }
+
+    /* 瞳孔 + 虹膜容器 (会跟随鼠标移动) */
+    .pupil {
+      width: 28px;
+      height: 28px;
+      background: #1e1b18;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(0,0,0,0.7), inset 0 0 8px rgba(80, 50, 20, 0.9);
+      background: radial-gradient(circle at 35% 30%, #4b392a, #0f0c08 85%);
+      transition: transform 0.05s linear; /* 平滑但快速跟随 */
+      will-change: transform;
+      position: relative;
+    }
+
+    /* 高光点，让眼睛更有神 */
+    .pupil::after {
+      content: "";
+      position: absolute;
+      top: 22%;
+      left: 25%;
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+      filter: blur(1px);
+      opacity: 0.9;
+      box-shadow: 0 0 6px white;
+    }
+
+    /* 调皮小亮点额外装饰 */
+    .eye::before {
+      content: "";
+      position: absolute;
+      top: 15%;
+      right: 18%;
+      width: 10px;
+      height: 10px;
+      background: rgba(255, 255, 250, 0.7);
+      border-radius: 50%;
+      filter: blur(1.5px);
+      z-index: 3;
+    }
+
+    /* 针对移动设备调整眼睛大小 */
+    @media (max-width: 500px) {
+      .eye {
+        width: 55px;
+        height: 55px;
+      }
+      .pupil {
+        width: 22px;
+        height: 22px;
+      }
+      .eyes {
+        gap: 1.5rem;
+      }
+      .phrase {
+        font-size: 1.8rem;
+        white-space: nowrap;
+        padding: 0.4rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 上方固定英文诗 -->
+    <div class="poem top-poem">
+      <p><em>"The fog comes<br>on little cat feet.<br>It sits looking<br>over harbor and city<br>on silent haunches<br>and then moves on."</em><br><span style="font-size:0.9rem; opacity:0.8;">— Carl Sandburg</span></p>
+    </div>
+
+    <!-- 中间调皮眼眸区域 -->
+    <div class="eye-section">
+      <div class="phrase">what you are looking for...</div>
+      <div class="eyes">
+        <div class="eye" id="leftEye">
+          <div class="pupil" id="leftPupil"></div>
+        </div>
+        <div class="eye" id="rightEye">
+          <div class="pupil" id="rightPupil"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 下方固定英文诗 -->
+    <div class="poem bottom-poem">
+      <p><em>"Hope is the thing with feathers<br>That perches in the soul,<br>And sings the tune without the words,<br>And never stops at all."</em><br><span style="font-size:0.9rem; opacity:0.8;">— Emily Dickinson</span></p>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // 获取瞳孔元素
+      const leftPupil = document.getElementById('leftPupil');
+      const rightPupil = document.getElementById('rightPupil');
+      
+      // 获取眼睛容器（用于计算边界）
+      const leftEye = document.getElementById('leftEye');
+      const rightEye = document.getElementById('rightEye');
+
+      // 瞳孔可移动的最大半径（相对于眼睛中心），单位px
+      // 根据眼睛尺寸动态计算，确保瞳孔不会跑出虹膜区域。
+      function getMaxTravelDistance(eyeElement) {
+        if (!eyeElement) return 18;
+        const eyeWidth = eyeElement.offsetWidth;
+        // 眼睛半径大约一半，瞳孔自身半径约22.5px(基于45px宽度)，限制移动范围
+        const eyeRadius = eyeWidth / 2;
+        const pupilRadius = 22.5; // 与css中pupil宽度45px对应一半
+        // 让瞳孔中心最多移动到距离眼睛中心 eyeRadius - pupilRadius - 4px (留边距)
+        return Math.max(8, eyeRadius - pupilRadius - 4);
+      }
+
+      // 更新瞳孔位置
+      function updatePupils(mouseX, mouseY) {
+        if (!leftEye || !rightEye || !leftPupil || !rightPupil) return;
+
+        // 获取左眼中心坐标
+        const leftRect = leftEye.getBoundingClientRect();
+        const leftCenterX = leftRect.left + leftRect.width / 2;
+        const leftCenterY = leftRect.top + leftRect.height / 2;
+
+        // 获取右眼中心坐标
+        const rightRect = rightEye.getBoundingClientRect();
+        const rightCenterX = rightRect.left + rightRect.width / 2;
+        const rightCenterY = rightRect.top + rightRect.height / 2;
+
+        // 计算最大移动距离 (动态适应窗口大小)
+        const maxDistLeft = getMaxTravelDistance(leftEye);
+        const maxDistRight = getMaxTravelDistance(rightEye);
+
+        // 计算从左眼中心到鼠标的向量
+        const angleLeft = Math.atan2(mouseY - leftCenterY, mouseX - leftCenterX);
+        const distanceLeft = Math.min(maxDistLeft, Math.hypot(mouseX - leftCenterX, mouseY - leftCenterY));
+        
+        // 左瞳孔偏移量
+        const leftDx = Math.cos(angleLeft) * distanceLeft;
+        const leftDy = Math.sin(angleLeft) * distanceLeft;
+
+        // 计算从右眼中心到鼠标的向量
+        const angleRight = Math.atan2(mouseY - rightCenterY, mouseX - rightCenterX);
+        const distanceRight = Math.min(maxDistRight, Math.hypot(mouseX - rightCenterX, mouseY - rightCenterY));
+        
+        const rightDx = Math.cos(angleRight) * distanceRight;
+        const rightDy = Math.sin(angleRight) * distanceRight;
+
+        // 应用变换 (使用transform: translate 相对于瞳孔原始中心)
+        // 瞳孔初始位于眼睛中心，通过translate移动
+        leftPupil.style.transform = `translate(${leftDx}px, ${leftDy}px)`;
+        rightPupil.style.transform = `translate(${rightDx}px, ${rightDy}px)`;
+      }
+
+      // 鼠标移动监听
+      function onMouseMove(e) {
+        updatePupils(e.clientX, e.clientY);
+      }
+
+      // 处理触摸事件（移动端）
+      function onTouchMove(e) {
+        if (e.touches && e.touches.length > 0) {
+          const touch = e.touches[0];
+          updatePupils(touch.clientX, touch.clientY);
+        }
+      }
+
+      // 当没有鼠标/触摸时，瞳孔回归中心（调皮地微微偏移或无动作，我们让它回到中心）
+      function resetPupilsToCenter() {
+        if (leftPupil && rightPupil) {
+          leftPupil.style.transform = 'translate(0px, 0px)';
+          rightPupil.style.transform = 'translate(0px, 0px)';
+        }
+      }
+
+      // 鼠标离开窗口时瞳孔归位 (保持调皮但礼貌)
+      function onMouseLeave() {
+        resetPupilsToCenter();
+      }
+
+      // 窗口大小改变时重新计算瞳孔位置（如果鼠标还在窗口内，重新定位）
+      function onResize() {
+        // 尝试获取当前鼠标位置（如果有的话），但无法主动获取；简单归位或保留最后位置。
+        // 为了体验，如果鼠标还在页面上，我们可以不强制归位；但resize后眼睛位置变化，
+        // 最好基于最后已知鼠标位置重新计算。我们存储最后鼠标坐标。
+        if (window.lastKnownMouseX !== undefined && window.lastKnownMouseY !== undefined) {
+          updatePupils(window.lastKnownMouseX, window.lastKnownMouseY);
+        } else {
+          resetPupilsToCenter();
+        }
+      }
+
+      // 存储最后鼠标坐标
+      function storeMousePosition(e) {
+        window.lastKnownMouseX = e.clientX;
+        window.lastKnownMouseY = e.clientY;
+      }
+
+      // 合并鼠标移动处理：存储并更新瞳孔
+      function handleMouseMove(e) {
+        storeMousePosition(e);
+        updatePupils(e.clientX, e.clientY);
+      }
+
+      function handleTouchMove(e) {
+        if (e.touches && e.touches.length > 0) {
+          const touch = e.touches[0];
+          window.lastKnownMouseX = touch.clientX;
+          window.lastKnownMouseY = touch.clientY;
+          updatePupils(touch.clientX, touch.clientY);
+        }
+      }
+
+      // 绑定事件
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('touchmove', handleTouchMove, { passive: true });
+      window.addEventListener('mouseleave', onMouseLeave);
+      // 触摸结束时不强制归位，保留最后位置；但可添加touchend归位（可选），这里为了调皮感，保留视线方向。
+      window.addEventListener('touchend', function(e) {
+        // 可选：短暂延迟后归位？不处理，让瞳孔留在最后触摸方向，更有趣。
+        // 如果希望手指离开后回中，可以取消注释下一行：
+        // setTimeout(resetPupilsToCenter, 300);
+      });
+      
+      window.addEventListener('resize', onResize);
+
+      // 初始调用：瞳孔居中
+      resetPupilsToCenter();
+
+      // 确保页面加载后如果鼠标已经在窗口内（未移动），瞳孔默认居中。
+      // 也可以主动检测一次鼠标位置，但需要触发移动。为了更好体验，添加一个初始检测。
+      // 使用requestAnimationFrame轻微延迟尝试获取鼠标位置（如果鼠标静止在窗口内，没有事件触发）
+      // 简单方案：设置一个默认位置为窗口中心，或者直接保持居中等待用户移动。
+      // 这里保持居中即可。
+    })();
+  </script>
+</body>
+</html>
